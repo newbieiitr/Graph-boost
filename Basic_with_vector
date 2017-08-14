@@ -1,0 +1,68 @@
+#include <map>
+#include <set>
+#include <list>
+#include <cmath>
+#include <ctime>
+#include <deque>
+#include <queue>
+#include <stack>
+#include <string>
+#include <bitset>
+#include <cstdio>
+#include <limits>
+#include <vector>
+#include <climits>
+#include <cstring>
+#include <cstdlib>
+#include <fstream>
+#include <numeric>
+#include <sstream>
+#include <iostream>
+#include <algorithm>
+#include <unordered_map>
+
+using namespace std;
+
+
+int main(){
+    int modv;
+    int mode;
+typedef vector <pair<int,int> > rel;
+cout<<"no of vertex"<<endl;
+cin>>modv;
+vector <rel > graph;
+
+for(int i=0;i<modv;i++){
+
+rel temp;
+graph.push_back(temp);
+}
+cout<<"no of edges"<<endl;
+cin>>mode;
+cout<<"enter v1 , v2 and wt"<<endl;
+for(int i=0;i<mode;i++){
+
+int v1;
+int v2;
+int wt;
+cin>>v1;
+cin>>v2;
+cin>>wt;
+
+graph[v1].push_back(make_pair(v2,wt));
+graph[v2].push_back(make_pair(v1,wt));
+
+
+}
+// graph complete
+cout<<"enter source vertex"<<endl;
+int source;
+cin>>source;
+
+for(int i=0;i<graph[source].size();i++){
+cout<<"neighbour of vertex"<<source<<" is "<<graph[source][i].first<<" and its wt is "<<graph[source][i].second<<endl;;
+}
+
+
+    return 0;
+}
