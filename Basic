@@ -1,0 +1,64 @@
+#include <iostream>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/astar_search.hpp>
+using namespace std;
+using namespace boost;
+
+struct Vertex{
+    string name; // or whatever, maybe nothing
+};
+struct Edge{
+    // nothing, probably. Or a weight, a distance, a direction, ...
+    int weight;
+};
+
+int main() {
+	// your code goes here
+	
+	typedef adjacency_list<listS,vecS,undirectedS,Vertex,Edge> Mygraph;
+	typedef Mygraph::vertex_descriptor Vid;
+	typedef Mygraph::edge_descriptor Eid;
+	
+	Mygraph g;
+	
+	Vid V1=add_vertex(g);
+	g[V1].name="A";
+	Vid V2=add_vertex(g);
+	g[V2].name="B";
+	Vid V3=add_vertex(g);
+	g[V3].name="C";
+	Vid V4=add_vertex(g);
+	g[V4].name="D";
+	Vid V5=add_vertex(g);
+	g[V5].name="E";
+	
+	add_edge(V1,V3,g);
+	add_edge(V1,V2,g);
+	add_edge(V1,V4,g);
+	add_edge(V2,V4,g);
+	add_edge(V4,V5,g);
+	
+	Mygraph::vertex_iterator start,end;
+
+	tie(start,end)=vertices(g);
+	
+	for(;start!=end;start++){
+	    Vid temp=*start;
+	    if(g[temp].name=="D"){
+	        	Mygraph::adjacency_iterator NF,NL;
+	        cout<<"found BC!"<<endl;
+	        tie(NF,NL)=adjacent_vertices(temp,g);
+	        
+	        for(;NF!=NL;++NF){
+	            Vid nb=*NF;
+	            cout<<"neighbour of D is "<<g[nb].name<<endl;
+	        }
+	        
+	        
+	    }
+	}
+	
+	
+	
+	return 0;
+}
