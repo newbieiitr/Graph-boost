@@ -1,0 +1,128 @@
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <algorithm>
+#include <tuple>
+#include <unordered_map>
+
+using namespace std;
+struct Node{
+    int val;
+    int rank;
+    Node* parent;
+};
+
+Node* makeset(int a){
+    
+    Node * temp=new Node;
+    
+    temp->parent=temp;
+    temp->val=a;
+    temp->rank=0;
+    return temp;
+    
+}
+Node* findset(Node* A){
+    Node* temp=A;
+    while(A->parent!=A){
+        A=A->parent;
+    }
+    temp->parent=A;
+    
+    return A;
+}
+void Union (Node* A,Node* B){
+    A=findset(A);
+    B=findset(B);
+    
+    if(A->rank>B->rank){
+        B->parent=A;
+        
+    }
+    else if(B->rank>A->rank){
+        A->parent=B;
+    }
+    else {
+         A->parent=B;
+         B->rank=B->rank+1;
+    }
+    
+    
+    
+}
+
+int krushkal(int modv,vector <vector  <pair <int,int> >> relation){
+    
+   // unify(vector <vector> relation);
+    // assume one way 
+    typedef tuple<int,int,int> pr;
+    vector <pr > sol;
+    cout<<relation.size()<<endl;
+    for (int i=0;i<relation.size();i++){
+        for (int j=0;j<relation[i].size();j++){
+            sol.push_back(make_tuple(relation[i][j].second,i,relation[i][j].first));
+            cout<<"loop"<<i<<j<<endl;
+        }
+    }
+    
+    sort(sol.begin(),sol.end());
+    
+    unordered_map <int, Node*> nodes ;
+    
+    for(int i=0;i<modv;i++){
+        
+        nodes[i]=makeset(i);
+    }
+    int sum=0;
+   
+   
+    for(int i=0;i<sol.size();i++){
+        
+        if(    findset(nodes[get<1>(sol[i])])   != findset(nodes[get<2>(sol[i])]) ){
+            sum+=get<0>(sol[i]);
+            Union (nodes[get<1>(sol[i])],nodes[get<2>(sol[i])]);
+            cout<<"elememt"<<get<0>(sol[i])<<" "<<get<1>(sol[i])<<" "<<get<2>(sol[i])<<endl;
+           cout<<"sum is"<<sum<<endl;
+        
+        }
+       
+            
+        
+    }
+    
+    return sum;
+    
+}
+
+int main() {
+	// your code goes here
+	int modv,modedge;
+	cin>>modv;
+	cin>>modedge;
+	vector <vector < pair<int,int> > > relation;
+cout<<modv<<" "<<modedge<<endl;
+	for (int i=0;i<modv;i++) {
+	    vector < pair<int,int> > temp;
+	    relation.push_back(temp); }
+	for(int i=0;i<modedge;i++){
+	    int v1;
+	    int v2;
+	    int weight;
+	    cin>>v1;
+	    cin>>v2;
+	    cin>>weight;
+	    int temp=v1;
+	    v1=min(v1,v2);
+	    v2=max(temp,v2);
+	    vector < pair<int,int> > t= relation[v1];
+	   t.push_back(make_pair(v2,weight));
+	   
+	   relation[v1]=t;
+	}
+cout<<"called"<<endl;
+	cout<<krushkal(modv,relation)<<endl;
+	
+	
+	
+	return 0;
+}
