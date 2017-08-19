@@ -1,0 +1,132 @@
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <algorithm>
+#include <tuple>
+#include <unordered_map>
+#include <climits>
+
+
+using namespace std;
+void pathgen(int i,int j,vector <vector <int> >&path){
+    char x=i+'0';
+    string sol="";
+    sol+=x;
+    string temp="";
+    x=j+'0';
+    temp+=x;
+    while(path[i][j]!=i&&path[i][j]!=path.size()){
+        char  y=path[i][j]+'0';
+        temp+=y;
+        j=path[i][j];
+    }
+    if(path[i][j]==path.size()){ cout<<"no path known"<<endl;
+    
+        return;
+    }
+    reverse(temp.begin(),temp.end());
+    
+   cout<<sol<<temp<<endl;
+    
+}
+void prin(vector <vector <int> > &A){
+     for(int i=0;i<A.size();i++){
+       for(int j=0;j<A[i].size();j++){
+          cout<<A[i][j]<<" ";
+       }
+       cout<<endl;
+   } 
+}
+bool com( int a,int b,int c){
+    if(max(b,c)==INT_MAX){
+        return 0;
+    }
+    else {
+        return (a>(b+c));
+    }
+}
+
+void warshal(int modv,vector <vector  <pair <int,int> >> relation){
+    
+    
+    typedef vector <vector <int> >  dv;
+    dv path;
+    dv distance;
+    int inf=INT_MAX;
+    for(int i=0;i<modv;i++){
+        vector <int> ra;
+        vector <int> ra2;
+       for(int j=0;j<modv;j++){
+           
+         ra.push_back(modv);
+         ra2.push_back(inf);
+          
+       } 
+        path.push_back(ra);
+           distance.push_back(ra2);
+    }
+    for(int i=0;i<modv;i++) distance[i][i]=0;
+    
+   for(int i=0;i<relation.size();i++){
+       for(int j=0;j<relation[i].size();j++){
+           distance[i][relation[i][j].first]= relation[i][j].second;
+           path[i][relation[i][j].first]= i;
+       }
+   } 
+ 
+  for(int k=0;k<modv;k++){
+       for(int i=0;i<modv;i++){
+       for(int j=0;j<modv;j++){
+          if(com(distance[i][j],distance[i][k],distance[k][j])){
+              distance[i][j]=distance[i][k]+distance[k][j];
+              path[i][j]=path[k][j];
+          }
+       }
+   } 
+  }
+  prin(path);
+  cout<<endl;
+  prin(distance);
+  
+  for(int i=0;i<modv;i++){
+       for(int j=0;j<modv;j++){
+           cout<<"distance between "<<i<<" and "<<j<<endl;
+           pathgen(i,j,path);
+       }
+   } 
+  
+  
+  
+    cout<<"terminated"<<endl;
+}
+
+int main() {
+	// your code goes here
+	int modv,modedge;
+	cin>>modv;
+	cin>>modedge;
+	vector <vector < pair<int,int> > > relation;
+cout<<modv<<" "<<modedge<<endl;
+	for (int i=0;i<modv;i++) {
+	    vector < pair<int,int> > temp;
+	    relation.push_back(temp); }
+	for(int i=0;i<modedge;i++){
+	    int v1;
+	    int v2;
+	    int weight;
+	    cin>>v1;
+	    cin>>v2;
+	    cin>>weight;
+	   
+	    vector < pair<int,int> > t= relation[v1];
+	   t.push_back(make_pair(v2,weight));
+	   
+	   relation[v1]=t;
+	}
+cout<<"called"<<endl;
+	warshal(modv,relation);
+	
+	
+	
+	return 0;
+}
