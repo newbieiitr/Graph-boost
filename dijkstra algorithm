@@ -1,0 +1,198 @@
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <unordered_map>
+#include <climits>
+using namespace std;
+typedef pair <int,int> P;
+typedef vector <P> edges; 
+class minbin {
+   vector <pair <int,int> > bin;
+    unordered_map <int,int> hash;
+     unordered_map <int,int> rev;
+    
+    public:
+    minbin(){}
+    P contain(int index);
+    bool empty(){ return (bin.size()==0);}
+    void decrese(int index,int value);
+    void add (int index,int value);
+    void heapify(int pos);
+    P extractmin();
+    void prin();
+    void prinI();    
+    
+};
+ P  minbin::contain(int index){
+    // cout<<"size"<<bin.size()<<endl;
+     if(hash.find(index)==hash.end()) return make_pair(-1,-1);
+     else {
+         return bin[hash[index]];
+     }
+ }
+void  minbin::decrese(int index,int value){
+    int pos=hash[index];
+  //  cout<<pos<<endl;
+ // cout<<bin[pos].first<<" "<<bin[pos].second<<endl;
+    bin[pos].first=value;
+    
+    while(pos>0&&bin[pos].first<bin[(pos-1)/2].first){
+        P temp=bin[(pos-1)/2];
+        bin[(pos-1)/2]=bin[pos];
+        bin[pos]=temp;
+       
+        hash[ bin[(pos-1)/2].second]=(pos-1)/2;
+        hash[temp.second]=pos;
+        pos=(pos-1)/2;
+        
+    }
+    
+}
+ void minbin::add (int index,int value){
+     bin.push_back(make_pair(value,index));
+     hash[index]=bin.size()-1;
+     heapify(bin.size()-1);
+ }
+  void minbin::heapify(int pos){
+      
+       while(pos>0&&bin[pos].first<bin[(pos-1)/2].first){
+            P temp=bin[(pos-1)/2];
+        bin[(pos-1)/2]=bin[pos];
+        bin[pos]=temp;
+       
+        hash[bin[(pos-1)/2].second]=(pos-1)/2;
+        hash[temp.second]=pos;
+        pos=(pos-1)/2;
+  } }
+P minbin::extractmin(){
+    P p1=bin[bin.size()-1];
+    P mini=bin[0];
+    hash.erase(bin[0].second);
+    bin[0]=p1;
+    bin.pop_back();
+  //  cout<<"size reduced "<<bin.size()<<endl;
+    hash[p1.second]=0;
+    int pos=0;
+    int flag=0;
+    while((2*pos+1)<bin.size()&&flag==0){
+         P L=bin[2*pos+1];
+        if((2*pos+2)<bin.size()){
+           
+            P R=bin[2*pos+2];
+            if(bin[pos].first<=min(L.first,R.first)) flag=1;
+            else{
+                if(L.first<R.first) {
+                    
+                     bin[2*pos+1]=bin[pos];
+                     bin[pos]=L;
+       
+                     hash[bin[2*pos+1].second]=2*pos+1;
+                     hash[L.second]=pos;
+                     pos=2*pos+1;
+                }
+                else {
+                    bin[2*pos+2]=bin[pos];
+                     bin[pos]=R;
+       
+                     hash[bin[2*pos+2].second]=2*pos+2;
+                     hash[R.second]=pos;
+                     pos=2*pos+2; 
+                }
+            }
+        }
+        else if(bin[pos].first<=L.first) flag=1;
+        else {
+            bin[2*pos+1]=bin[pos];
+                     bin[pos]=L;
+       
+                     hash[bin[2*pos+1].second]=2*pos+1;
+                     hash[L.second]=pos;
+                     pos=2*pos+1;
+        }
+    }
+    return mini;
+}
+void minbin::prin(){
+    for(int i=0;i<bin.size();i++) cout<<bin[i].first<<" ";
+    cout<<endl;
+}
+void minbin::prinI(){
+     for(int i=0;i<bin.size();i++) cout<<bin[i].first<<" "<<bin[i].second<<endl;
+   
+}
+int dijkstra(	vector < edges> &relation,int source,int desti){
+	unordered_map <int,int> parent;
+	unordered_map <int,int> distance;
+	minbin* abc =new minbin();
+	for (int i = 0;i<relation.size();i++) abc->add(i,INT_MAX);
+//	abc->prin();
+	abc->decrese(source,0);
+	P current=abc->extractmin();
+	parent[current.second]=-1;
+	distance[current.second]=0;
+	
+	while(abc->empty()!=1){
+
+//	parent[current.second]=-1;
+	distance[current.second]=current.first;
+//	cout<<"while                              "<<current.first<<""<<current.second<<endl;
+	
+	for(int i=0;i<relation[current.second].size();i++){
+	    P  val;
+	    P pr=relation[current.second][i];
+	    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	    val=(abc->contain(pr.first));
+	  //  cout<<" "<<val.second<<endl;
+	    if(val.second!=-1){
+	      //  cout<<"called"<<endl;
+	       if(distance[current.second]+pr.second<val.first){
+	           // update
+	           //cout<<pr.second<<" "<<distance[current.second]<<endl;
+	         //  cout<<"changed node"<<val.second<<" now distance is"<<distance[current.second]+pr.second<<endl;
+	           abc->decrese(val.second,distance[current.second]+pr.second);
+	           parent[val.second]=current.second;
+	       }
+	    }
+	}
+		current=abc->extractmin();
+	}
+		distance[current.second]=current.first;
+	// calculation part
+//	abc->prin();
+//for(int i=0;i<relation.size();i++)	cout<<i<<" "<<distance[i]<<endl;
+	return distance[desti];
+    
+}
+int main() {
+	// your code goes here
+	int modv;
+	int mode;
+	cin>>modv;
+	cin>>mode;
+//	cout<<"nodes are"<<modv<<"edges are"<<mode<<endl; 
+	vector < edges> relation;
+	for (int i=0;i<modv;i++){
+	    edges e;
+	    relation.push_back(e);
+	}
+	
+	for(int i=0;i<mode;i++){
+	    int first;
+	    int second;
+	    int weight;
+	    cin>>first;
+	    cin>>second;
+	    cin>>weight;
+	    relation[first].push_back(make_pair(second,weight));
+	    relation[second].push_back(make_pair(first,weight));
+	}
+	int source,desti;
+	   cin>>source;
+	    cin>>desti;
+	
+
+cout<<"distance is"<<	dijkstra(relation,source,desti)<<endl;
+	
+	
+	return 0;
+}
