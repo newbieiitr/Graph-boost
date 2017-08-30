@@ -1,0 +1,48 @@
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <unordered_map>
+using namespace std;
+
+typedef int data;
+ 
+
+bool OrderByAge(data* const &a, data* const &b)
+{
+      return (*a > *b); 
+};
+int main() {
+	// your code goes here
+	int x[7] = {4, 2, 7,6,8,1,3};
+std::vector<int> temp(x, x + sizeof x / sizeof x[0]);
+unordered_map <int,data*> hash;
+vector <data*> sol;
+for(int i=0;i<temp.size();i++){
+    data* tem=new data;
+    *tem=temp[i];
+     sol.push_back(tem);
+    hash[i]=tem;
+   
+}
+
+make_heap(sol.begin(),sol.end(),OrderByAge);
+
+for(int i=0;i<sol.size();i++) cout<<*sol[i]<<" ";
+
+cout<<endl;
+
+
+//print_queue(q2); val
+
+*hash[3]=16;
+
+make_heap(sol.begin(),sol.end(),OrderByAge);
+
+for(int i=0;i<sol.size();i++) cout<<*sol[i]<<" ";
+
+cout<<endl;
+
+    
+    
+	return 0;
+}
